@@ -46,7 +46,6 @@ int main() {
             identifier = "", number = "";
 			char ch = line[i];
 
-
             if (inComment) { //comments
                 if (ch == '}') inComment = false;
                 continue;
@@ -101,7 +100,6 @@ int main() {
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[8] << endl;
                     continue;
-
             }
 
             if (ch == ':' && line[i + 1] == '=') {
@@ -187,7 +185,7 @@ int main() {
                     pos++;
                 }
                 if(err)
-                {writeFile <<"ERROR -> " <<number  << " is INVALID IDENTIFIER!" << endl;
+                {writeFile <<"ERROR INVALID IDENTIFIER " <<number  << " on line: " << i << endl;
                     break;
                 }
 
@@ -199,11 +197,10 @@ int main() {
 			}
             // If we reach here, it's an error
 
-            writeFile <<"ERROR -> "<< ch << "is unexpected Character!" << endl;
+            writeFile <<"ERROR: unexpected character -> "<< ch << " on line: " << i << endl;
 
             err=1;
             break;
-
 
         }
         if (err) break;
