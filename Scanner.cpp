@@ -23,7 +23,6 @@ typedef struct
 } TokenRecord;
 
 int main() {
-    char characters[9] = { ';','+','-','*','/','<','=','(',')' };
     string keywords[9] = { "SEMICOLON","PLUS","MINUS","MULT","DIV","LESSTHAN","EQUAL","OPENBRACKET","CLOSEDBRACKET" };
     TokenRecord token{};
 
