@@ -6,4 +6,4 @@ x,IDENTIFIER
 <,LESSTHAN
 0,NUMBER
 then,THEN
-UNKNOWN Character found: ! at line: 13
+ERROR -> 7amadais INVALID IDENTIFIER!
