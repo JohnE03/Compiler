@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 using namespace std;
-typedef  enum
+typedef enum
 {
     SEMICOLON, IF, THEN, END,
     REPEAT, UNTIL,
