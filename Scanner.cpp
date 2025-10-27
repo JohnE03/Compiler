@@ -36,65 +36,81 @@ int main() {
 
     string line;
 	string identifier, number;
-	bool inComment = false;
-    while (getline(readFile, line)) {
+    bool inComment = false, exit = false;
+
+    while (getline(readFile, line)) { 
         for (int i=0; i < line.length();i++) {
+
             identifier = "", number = "";
 			char ch = line[i];
+
             if (inComment) {
                 if (ch == '}') inComment = false;
                 continue;
             }
             if (ch == '{') { inComment = true; continue; }
 
-            switch (ch) {
-            case ';':
-                token.type = SEMICOLON;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[0] <<endl;
-                break;
-            case '+':
-                token.type = PLUS;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[1] << endl;
-                break;
-            case '-':
-                token.type = MINUS;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[2] << endl;
-                break;
-            case '*':
-                token.type = MULT;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[3] << endl;
-                break;
-            case '/':
-                token.type = DIV;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[4] << endl;
-                break;
-            case '<':
-                token.type = LESSTHAN;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[5] << endl;
-                break;
-            case '=':
-                token.type = EQUAL;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[6] << endl;
-                break;
-            case '(':
-                token.type = OPENBRACKET;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[7] << endl;
-                break;
-            case ')':
-                token.type = CLOSEDBRACKET;
-                token.stringVal = ch;
-                writeFile << ch << ',' << keywords[8] << endl;
-                break;
-            default:
-                break;
+            if (!isalnum(ch)) {
+                switch (ch) {
+                case ' ':
+                    continue;
+				case '\t':
+					continue;
+                case ':':
+					continue;
+                case '"':
+                    continue;
+                case ';':
+                    token.type = SEMICOLON;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[0] << endl;
+                    continue;
+                case '+':
+                    token.type = PLUS;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[1] << endl;
+                    continue;
+                case '-':
+                    token.type = MINUS;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[2] << endl;
+                    continue;
+                case '*':
+                    token.type = MULT;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[3] << endl;
+                    continue;
+                case '/':
+                    token.type = DIV;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[4] << endl;
+                    continue;
+                case '<':
+                    token.type = LESSTHAN;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[5] << endl;
+                    continue;
+                case '=':
+                    token.type = EQUAL;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[6] << endl;
+                    continue;
+                case '(':
+                    token.type = OPENBRACKET;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[7] << endl;
+                    continue;
+                case ')':
+                    token.type = CLOSEDBRACKET;
+                    token.stringVal = ch;
+                    writeFile << ch << ',' << keywords[8] << endl;
+                    continue;
+                default:
+					writeFile << "UNKNOWN Character found: "<< ch <<" at line: " <<i << endl;
+					exit = true;
+                    break;
+                }
+				if (exit) break;
             }
 
             if (ch == ':' && line[i + 1] == '=') {
@@ -181,6 +197,7 @@ int main() {
 				continue;
 			}
         }
+		if (exit) break;
     }
 	writeFile.close();
     string loc = "start " + location;
