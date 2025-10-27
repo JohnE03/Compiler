@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 using namespace std;
 typedef  enum
 {
@@ -24,6 +25,8 @@ typedef struct
 
 int main() {
     string keywords[9] = { "SEMICOLON","PLUS","MINUS","MULT","DIV","LESSTHAN","EQUAL","OPENBRACKET","CLOSEDBRACKET" };
+
+    vector<TokenRecord >tokens;
     TokenRecord token{};
 
     string location = "";
@@ -37,64 +40,68 @@ int main() {
     string line;
 	string identifier, number;
 	bool inComment = false;
+    bool err=0;
     while (getline(readFile, line)) {
         for (int i=0; i < line.length();i++) {
             identifier = "", number = "";
 			char ch = line[i];
-            if (inComment) {
+
+
+            if (inComment) { //comments
                 if (ch == '}') inComment = false;
                 continue;
             }
             if (ch == '{') { inComment = true; continue; }
+
+            if(ch==' ')continue;//whitespaces
 
             switch (ch) {
             case ';':
                 token.type = SEMICOLON;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[0] <<endl;
-                break;
+                continue;
             case '+':
                 token.type = PLUS;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[1] << endl;
-                break;
+                    continue;
             case '-':
                 token.type = MINUS;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[2] << endl;
-                break;
+                    continue;
             case '*':
                 token.type = MULT;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[3] << endl;
-                break;
+                    continue;
             case '/':
                 token.type = DIV;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[4] << endl;
-                break;
+                    continue;
             case '<':
                 token.type = LESSTHAN;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[5] << endl;
-                break;
+                    continue;
             case '=':
                 token.type = EQUAL;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[6] << endl;
-                break;
+                    continue;
             case '(':
                 token.type = OPENBRACKET;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[7] << endl;
-                break;
+                    continue;
             case ')':
                 token.type = CLOSEDBRACKET;
                 token.stringVal = ch;
                 writeFile << ch << ',' << keywords[8] << endl;
-                break;
-            default:
-                break;
+                    continue;
+
             }
 
             if (ch == ':' && line[i + 1] == '=') {
@@ -170,17 +177,36 @@ int main() {
             if(isdigit(ch)) {
                 number += ch;
                 size_t pos = i + 1;
-                while (pos < line.length() && isdigit(line[pos])) {
+                while (pos < line.length() && isalnum(line[pos])) {
+                    if(!isdigit(line[pos]))  //invalid number
+                    {
+                        err=1;
+                    }
+
                     number += line[pos];
                     pos++;
                 }
+                if(err)
+                {writeFile <<"ERROR -> " <<number  << " is INVALID IDENTIFIER!" << endl;
+                    break;
+                }
+
                 token.type = NUMBER;
                 token.numVal = stoi(number);
                 writeFile << number << ',' << "NUMBER" << endl;
 				i = i + number.length() - 1;
 				continue;
 			}
+            // If we reach here, it's an error
+
+            writeFile <<"ERROR -> "<< ch << "is unexpected Character!" << endl;
+
+            err=1;
+            break;
+
+
         }
+        if (err) break;
     }
 	writeFile.close();
     string loc = "start " + location;

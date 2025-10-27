@@ -1,8 +1,9 @@
 { Sample program in
 TINY language }
 read x;
-if x < 0 then
-write "negative"
+    if x < 0 then
+   7amada
+write x
 end
 y := 5
 z := 3
