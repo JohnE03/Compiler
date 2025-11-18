@@ -2,11 +2,12 @@
 TINY language }
 read x;
     if x < 0 then
-   7amada
-write x
+   7amada = 5
+	write x
 end
 y := 5
 z := 3
+name := "John Emile"
 repeat
 y:=y+5
 if z = 3 then

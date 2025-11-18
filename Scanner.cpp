@@ -52,7 +52,7 @@ int main() {
             }
             if (ch == '{') { inComment = true; continue; }
 
-            if(ch==' ')continue;//whitespaces
+            if(ch==' ' || ch == '\t') continue;//whitespaces
 
             switch (ch) {
             case ';':
@@ -110,7 +110,7 @@ int main() {
                 continue;
             }
 
-            if(isalpha(ch)) {
+            if (isalpha(ch)) {
                 if(ch=='i' && line[i + 1] == 'f'){
                     token.type = IF;
                     token.stringVal = "if";
@@ -175,11 +175,12 @@ int main() {
             if(isdigit(ch)) {
                 number += ch;
                 size_t pos = i + 1;
-                while (pos < line.length() && isalnum(line[pos])) {
-                    if(!isdigit(line[pos]))  //invalid number
-                    {
-                        err=1;
-                    }
+                while (pos < line.length() && isdigit(line[pos])) {
+
+                    //if(!isdigit(line[pos]))  //invalid number
+                    //{
+                    //    err=1;
+                    //}
 
                     number += line[pos];
                     pos++;
