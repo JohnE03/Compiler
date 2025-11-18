@@ -185,7 +185,9 @@ int main() {
                     pos++;
                 }
                 if(err)
-                {writeFile <<"ERROR INVALID IDENTIFIER " <<number  << " on line: " << i << endl;
+                {
+                    writeFile <<"ERROR INVALID IDENTIFIER: " <<number  << " on line: " << i << endl;
+                    cout << "ERROR INVALID IDENTIFIER: " << number << " on line: " << i << endl;
                     break;
                 }
 
@@ -198,7 +200,7 @@ int main() {
             // If we reach here, it's an error
 
             writeFile <<"ERROR: unexpected character -> "<< ch << " on line: " << i << endl;
-
+            cout << "ERROR: unexpected character -> " << ch << " on line: " << i << endl;
             err=1;
             break;
 
