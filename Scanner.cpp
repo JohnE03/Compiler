@@ -26,7 +26,7 @@ typedef struct
 int main() {
     string keywords[9] = { "SEMICOLON","PLUS","MINUS","MULT","DIV","LESSTHAN","EQUAL","OPENBRACKET","CLOSEDBRACKET" };
 
-    vector<TokenRecord >tokens;
+    vector<TokenRecord>tokens;
     TokenRecord token{};
 
     string location = "";
@@ -37,11 +37,12 @@ int main() {
 	cin >> location;
     ofstream writeFile(location);
 
-    string line;
-	string identifier, number;
+	int lineNumber = 0;
+    string line, identifier, number;
     bool inComment = false, inString = false;
     bool err=0;
     while (getline(readFile, line)) {
+		lineNumber++;
         for (int i=0; i < line.length();i++) {
             if (!inString) identifier = "";
             number = "";
@@ -202,8 +203,8 @@ int main() {
                 }
                 if(err)
                 {
-                    writeFile <<"ERROR INVALID IDENTIFIER: " <<number  << " on line: " << i << endl;
-                    cout << "ERROR INVALID IDENTIFIER: " << number << " on line: " << i << endl;
+                    writeFile <<"ERROR INVALID IDENTIFIER: " <<number  << " on line: " << lineNumber << endl;
+                    cout << "ERROR INVALID IDENTIFIER: " << number << " on line: " << lineNumber << endl;
                     break;
                 }
 
@@ -215,8 +216,8 @@ int main() {
 			}
             // If we reach here, it's an error
 
-            writeFile <<"ERROR: unexpected character -> "<< ch << " on line: " << i << endl;
-            cout << "ERROR: unexpected character -> " << ch << " on line: " << i << endl;
+            writeFile <<"ERROR: unexpected character -> "<< ch << " on line: " << lineNumber << endl;
+            cout << "ERROR: unexpected character -> " << ch << " on line: " << lineNumber << endl;
             err=1;
             break;
 
