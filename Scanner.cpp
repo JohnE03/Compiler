@@ -39,11 +39,12 @@ int main() {
 
     string line;
 	string identifier, number;
-	bool inComment = false;
+    bool inComment = false, inString = false;
     bool err=0;
     while (getline(readFile, line)) {
         for (int i=0; i < line.length();i++) {
-            identifier = "", number = "";
+            if (!inString) identifier = "";
+            number = "";
 			char ch = line[i];
 
             if (inComment) { //comments
@@ -51,6 +52,20 @@ int main() {
                 continue;
             }
             if (ch == '{') { inComment = true; continue; }
+
+            if(inString) { //strings
+                if (ch == '\"') {
+                    inString = false;
+                    token.type = IDENTIFIER;
+                    token.stringVal = identifier;
+                    writeFile << identifier << ',' << "IDENTIFIER" << endl;
+                }
+                else {
+                    identifier += ch;
+                }
+                continue;
+			}
+            if (ch == '\"') { inString = true; continue; }
 
             if(ch==' ' || ch == '\t') continue;//whitespaces
 
