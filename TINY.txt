@@ -5,6 +5,7 @@ read x;
 	write x
 	else write "positive or 0"
 end
+7amada := 653
 y := 5
 z := 3
 repeat

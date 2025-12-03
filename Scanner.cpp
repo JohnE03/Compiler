@@ -13,8 +13,18 @@ typedef enum
     PLUS, MINUS, MULT, DIV,
     OPENBRACKET, CLOSEDBRACKET,
     NUMBER
-}
-TokenType;
+} TokenType;
+
+const string TokenNames[] = {
+    "SEMICOLON", "IF", "THEN", "ELSE", "END",
+    "REPEAT", "UNTIL",
+    "IDENTIFIER", "ASSIGN",
+    "READ", "WRITE",
+    "LESSTHAN", "EQUAL",
+    "PLUS", "MINUS", "MULT", "DIV",
+    "OPENBRACKET", "CLOSEDBRACKET",
+    "NUMBER"
+};
 
 typedef struct
 {
@@ -23,10 +33,9 @@ typedef struct
     int numVal;
 } TokenRecord;
 
-int main() {
-    string keywords[9] = { "SEMICOLON","PLUS","MINUS","MULT","DIV","LESSTHAN","EQUAL","OPENBRACKET","CLOSEDBRACKET" };
+vector<TokenRecord >tokens;
 
-    vector<TokenRecord>tokens;
+int main() {
     TokenRecord token{};
 
     string location = "";
@@ -59,6 +68,7 @@ int main() {
                     inString = false;
                     token.type = IDENTIFIER;
                     token.stringVal = identifier;
+					tokens.push_back(token);
                     writeFile << identifier << ", " << "IDENTIFIER" << endl;
                 }
                 else {
@@ -74,53 +84,63 @@ int main() {
             case ';':
                 token.type = SEMICOLON;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[0] <<endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "SEMICOLON" << endl;
                 continue;
             case '+':
                 token.type = PLUS;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[1] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "PLUS" << endl;
                     continue;
             case '-':
                 token.type = MINUS;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[2] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "MINUS" << endl;
                     continue;
             case '*':
                 token.type = MULT;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[3] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "MULT" << endl;
                     continue;
             case '/':
                 token.type = DIV;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[4] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "DIV" << endl;
                     continue;
             case '<':
                 token.type = LESSTHAN;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[5] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "LESSTHAN" << endl;
                     continue;
             case '=':
                 token.type = EQUAL;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[6] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "EQUAL" << endl;
                     continue;
             case '(':
                 token.type = OPENBRACKET;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[7] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "OPENBRACKET" << endl;
                     continue;
             case ')':
                 token.type = CLOSEDBRACKET;
                 token.stringVal = ch;
-                writeFile << ch << ", " << keywords[8] << endl;
+                tokens.push_back(token);
+                writeFile << ch << ", " << "CLOSEDBRACKET" << endl;
                     continue;
             }
 
             if (ch == ':' && line[i + 1] == '=') {
                 token.type = ASSIGN;
                 token.stringVal = ":=";
+                tokens.push_back(token);
                 writeFile << ":=" << ", " << "ASSIGN" << endl;
 				i = i + 1;
                 continue;
@@ -130,6 +150,7 @@ int main() {
                 if(ch=='i' && line[i + 1] == 'f'){
                     token.type = IF;
                     token.stringVal = "if";
+                    tokens.push_back(token);
                     writeFile << "if" << ", " << "IF" << endl;
                     i = i + 1;
                     continue;
@@ -137,6 +158,7 @@ int main() {
                 if (ch == 't' && line[i + 1] == 'h' && line[i + 2] == 'e' && line[i + 3] == 'n') {
                     token.type = THEN;
                     token.stringVal = "then";
+                    tokens.push_back(token);
                     writeFile << "then" << ", " << "THEN" << endl;
                     i = i + 3;
                     continue;
@@ -144,6 +166,7 @@ int main() {
                 if(ch == 'e' && line[i + 1] == 'l' && line[i + 2] == 's' && line[i + 3] == 'e') {
                     token.type = ELSE;
                     token.stringVal = "else";
+                    tokens.push_back(token);
                     writeFile << "else" << ", " << "ELSE" << endl;
                     i = i + 3;
 					continue;
@@ -151,6 +174,7 @@ int main() {
                 if (ch == 'e' && line[i + 1] == 'n' && line[i + 2] == 'd') {
                     token.type = END;
                     token.stringVal = "end";
+                    tokens.push_back(token);
                     writeFile << "end" << ", " << "END" << endl;
                     i = i + 2;
                     continue;
@@ -158,6 +182,7 @@ int main() {
                 if (ch == 'r' && line[i + 1] == 'e' && line[i + 2] == 'p' && line[i + 3] == 'e' && line[i + 4] == 'a' && line[i + 5] == 't') {
                     token.type = REPEAT;
                     token.stringVal = "repeat";
+                    tokens.push_back(token);
                     writeFile << "repeat" << ", " << "REPEAT" << endl;
                     i = i + 5;
                     continue;
@@ -165,6 +190,7 @@ int main() {
                 if (ch == 'u' && line[i + 1] == 'n' && line[i + 2] == 't' && line[i + 3] == 'i' && line[i + 4] == 'l') {
                     token.type = UNTIL;
                     token.stringVal = "until";
+                    tokens.push_back(token);
                     writeFile << "until" << ", " << "UNTIL" << endl;
                     i = i + 4;
                     continue;
@@ -172,6 +198,7 @@ int main() {
                 if (ch == 'r' && line[i + 1] == 'e' && line[i + 2] == 'a' && line[i + 3] == 'd') {
                     token.type = READ;
                     token.stringVal = "read";
+                    tokens.push_back(token);
                     writeFile << "read" << ", " << "READ" << endl;
                     i = i + 3;
                     continue;
@@ -179,6 +206,7 @@ int main() {
                 if (ch == 'w' && line[i + 1] == 'r' && line[i + 2] == 'i' && line[i + 3] == 't' && line[i + 4] == 'e') {
                     token.type = WRITE;
                     token.stringVal = "write";
+                    tokens.push_back(token);
                     writeFile << "write" << ", " << "WRITE" << endl;
                     i = i + 4;
                     continue;
@@ -191,6 +219,7 @@ int main() {
                 }
                 token.type = IDENTIFIER;
                 token.stringVal = identifier;
+                tokens.push_back(token);
                 writeFile << identifier << ", " << "IDENTIFIER" << endl;
 				i = i + identifier.length() - 1;
                 continue;
@@ -217,6 +246,7 @@ int main() {
 
                 token.type = NUMBER;
                 token.numVal = stoi(number);
+                tokens.push_back(token);
                 writeFile << number << ", " << "NUMBER" << endl;
 				i = i + number.length() - 1;
 				continue;
