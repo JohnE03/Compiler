@@ -15,6 +15,17 @@ typedef enum
     NUMBER
 } TokenType;
 
+const string TokenNames[] = {
+    "SEMICOLON", "IF", "THEN", "ELSE", "END",
+    "REPEAT", "UNTIL",
+    "IDENTIFIER", "ASSIGN",
+    "READ", "WRITE",
+    "LESSTHAN", "EQUAL",
+    "PLUS", "MINUS", "MULT", "DIV",
+    "OPENBRACKET", "CLOSEDBRACKET",
+    "NUMBER"
+};
+
 typedef struct
 {
     TokenType type;
@@ -25,8 +36,6 @@ typedef struct
 vector<TokenRecord >tokens;
 
 int main() {
-    string keywords[9] = { "SEMICOLON","PLUS","MINUS","MULT","DIV","LESSTHAN","EQUAL","OPENBRACKET","CLOSEDBRACKET" };
-
     TokenRecord token{};
 
     string location = "";
@@ -76,55 +85,55 @@ int main() {
                 token.type = SEMICOLON;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[0] <<endl;
+                writeFile << ch << ", " << "SEMICOLON" << endl;
                 continue;
             case '+':
                 token.type = PLUS;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[1] << endl;
+                writeFile << ch << ", " << "PLUS" << endl;
                     continue;
             case '-':
                 token.type = MINUS;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[2] << endl;
+                writeFile << ch << ", " << "MINUS" << endl;
                     continue;
             case '*':
                 token.type = MULT;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[3] << endl;
+                writeFile << ch << ", " << "MULT" << endl;
                     continue;
             case '/':
                 token.type = DIV;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[4] << endl;
+                writeFile << ch << ", " << "DIV" << endl;
                     continue;
             case '<':
                 token.type = LESSTHAN;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[5] << endl;
+                writeFile << ch << ", " << "LESSTHAN" << endl;
                     continue;
             case '=':
                 token.type = EQUAL;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[6] << endl;
+                writeFile << ch << ", " << "EQUAL" << endl;
                     continue;
             case '(':
                 token.type = OPENBRACKET;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[7] << endl;
+                writeFile << ch << ", " << "OPENBRACKET" << endl;
                     continue;
             case ')':
                 token.type = CLOSEDBRACKET;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << keywords[8] << endl;
+                writeFile << ch << ", " << "CLOSEDBRACKET" << endl;
                     continue;
             }
 
