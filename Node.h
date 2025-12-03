@@ -1,15 +1,13 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "Token.h"
 using namespace std;
 
 class Node{
 	public:
 		TokenRecord token;
-		Node* leftChild;
-		Node* rightChild;
+		vector<Node*> children;
 
-		Node();
 		Node(TokenRecord t);
 };
-

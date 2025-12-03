@@ -19,8 +19,14 @@ Node* Parser::program(){
 	return stmt_sequence();
 }
 Node* Parser::stmt_sequence(){
-	// Implementation goes here
-	return nullptr;
+	Node* stmtSeqNode = new Node(TokenRecord{});
+	stmtSeqNode->children.push_back(statement());
+	while (match(SEMICOLON)){
+		Node* semiColon = new Node(TokenRecord{SEMICOLON,";"});
+		semiColon->children.push_back(statement());
+		stmtSeqNode->children.push_back(semiColon);
+	}
+	return stmtSeqNode;
 }
 Node* Parser::statement(){
 	// Implementation goes here
