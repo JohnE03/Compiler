@@ -2,7 +2,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+
 using namespace std;
+
 typedef enum
 {
     SEMICOLON, IF, THEN, ELSE, END,
@@ -33,7 +35,7 @@ typedef struct
     int numVal;
 } TokenRecord;
 
-vector<TokenRecord >tokens;
+vector<TokenRecord> tokens;
 
 int main() {
     TokenRecord token{};
