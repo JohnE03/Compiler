@@ -5,6 +5,7 @@ using namespace std;
 
 typedef enum
 {
+    PROGRAM,
     SEMICOLON, IF, THEN, ELSE, END,
     REPEAT, UNTIL,
     IDENTIFIER, ASSIGN,
@@ -16,6 +17,7 @@ typedef enum
 } TokenType;
 
 const string TokenNames[] = {
+	"PROGRAM",
     "SEMICOLON", "IF", "THEN", "ELSE", "END",
     "REPEAT", "UNTIL",
     "IDENTIFIER", "ASSIGN",

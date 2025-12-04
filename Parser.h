@@ -5,6 +5,7 @@ using namespace std;
 class Parser{
 private:
 	int index = 0;
+	vector<TokenRecord> tokens;
 
 	TokenRecord getCurrentToken();
 	void advance();
@@ -19,14 +20,11 @@ private:
 	Node* read_stmt();
 	Node* write_stmt();
 	Node* exp();
-	Node* comparison_op();
 	Node* simple_exp();
-	Node* addop();
 	Node* term();
-	Node* mulop();
 	Node* factor();
 
 public:
-	Node* parse(vector<TokenRecord> tokens);
+	Node* parse(const vector<TokenRecord>& t = ::tokens);
 };
 

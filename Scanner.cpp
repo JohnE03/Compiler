@@ -3,32 +3,33 @@
 #include <string>
 #include <vector>
 #include "Token.h"
+#include "Parser.h"
 
 using namespace std;
 
 vector<TokenRecord> tokens;
 
-int main() {
+void Scanner() {
     TokenRecord token{};
 
     string location = "";
-	cout << "Enter the code file location: ";
-	cin >> location;
+    cout << "Enter the code file location: ";
+    cin >> location;
     ifstream readFile(location);
-	cout << "Enter output file location (default: output.txt): ";
-	cin >> location;
+    cout << "Enter output file location (default: output.txt): ";
+    cin >> location;
     ofstream writeFile(location);
 
-	int lineNumber = 0;
+    int lineNumber = 0;
     string line, identifier, number;
     bool inComment = false, inString = false;
-    bool err=0;
+    bool err = 0;
     while (getline(readFile, line)) {
-		lineNumber++;
-        for (int i=0; i < line.length();i++) {
+        lineNumber++;
+        for (int i = 0; i < line.length(); i++) {
             if (!inString) identifier = "";
             number = "";
-			char ch = line[i];
+            char ch = line[i];
 
             if (inComment) { //comments
                 if (ch == '}') inComment = false;
@@ -36,22 +37,22 @@ int main() {
             }
             if (ch == '{') { inComment = true; continue; }
 
-            if(inString) { //strings
+            if (inString) { //strings
                 if (ch == '\"') {
                     inString = false;
                     token.type = IDENTIFIER;
                     token.stringVal = identifier;
-					tokens.push_back(token);
+                    tokens.push_back(token);
                     writeFile << identifier << ", " << "IDENTIFIER" << endl;
                 }
                 else {
                     identifier += ch;
                 }
                 continue;
-			}
+            }
             if (ch == '\"') { inString = true; continue; }
 
-            if(ch==' ' || ch == '\t') continue;//whitespaces
+            if (ch == ' ' || ch == '\t') continue;//whitespaces
 
             switch (ch) {
             case ';':
@@ -65,49 +66,49 @@ int main() {
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "PLUS" << endl;
-                    continue;
+                continue;
             case '-':
                 token.type = MINUS;
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "MINUS" << endl;
-                    continue;
+                continue;
             case '*':
                 token.type = MULT;
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "MULT" << endl;
-                    continue;
+                continue;
             case '/':
                 token.type = DIV;
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "DIV" << endl;
-                    continue;
+                continue;
             case '<':
                 token.type = LESSTHAN;
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "LESSTHAN" << endl;
-                    continue;
+                continue;
             case '=':
                 token.type = EQUAL;
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "EQUAL" << endl;
-                    continue;
+                continue;
             case '(':
                 token.type = OPENBRACKET;
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "OPENBRACKET" << endl;
-                    continue;
+                continue;
             case ')':
                 token.type = CLOSEDBRACKET;
                 token.stringVal = ch;
                 tokens.push_back(token);
                 writeFile << ch << ", " << "CLOSEDBRACKET" << endl;
-                    continue;
+                continue;
             }
 
             if (ch == ':' && line[i + 1] == '=') {
@@ -115,19 +116,19 @@ int main() {
                 token.stringVal = ":=";
                 tokens.push_back(token);
                 writeFile << ":=" << ", " << "ASSIGN" << endl;
-				i = i + 1;
+                i = i + 1;
                 continue;
             }
 
             if (isalpha(ch)) {
-                if(ch=='i' && line[i + 1] == 'f'){
+                if (ch == 'i' && line[i + 1] == 'f') {
                     token.type = IF;
                     token.stringVal = "if";
                     tokens.push_back(token);
                     writeFile << "if" << ", " << "IF" << endl;
                     i = i + 1;
                     continue;
-				}
+                }
                 if (ch == 't' && line[i + 1] == 'h' && line[i + 2] == 'e' && line[i + 3] == 'n') {
                     token.type = THEN;
                     token.stringVal = "then";
@@ -136,14 +137,14 @@ int main() {
                     i = i + 3;
                     continue;
                 }
-                if(ch == 'e' && line[i + 1] == 'l' && line[i + 2] == 's' && line[i + 3] == 'e') {
+                if (ch == 'e' && line[i + 1] == 'l' && line[i + 2] == 's' && line[i + 3] == 'e') {
                     token.type = ELSE;
                     token.stringVal = "else";
                     tokens.push_back(token);
                     writeFile << "else" << ", " << "ELSE" << endl;
                     i = i + 3;
-					continue;
-				}
+                    continue;
+                }
                 if (ch == 'e' && line[i + 1] == 'n' && line[i + 2] == 'd') {
                     token.type = END;
                     token.stringVal = "end";
@@ -151,7 +152,7 @@ int main() {
                     writeFile << "end" << ", " << "END" << endl;
                     i = i + 2;
                     continue;
-				}
+                }
                 if (ch == 'r' && line[i + 1] == 'e' && line[i + 2] == 'p' && line[i + 3] == 'e' && line[i + 4] == 'a' && line[i + 5] == 't') {
                     token.type = REPEAT;
                     token.stringVal = "repeat";
@@ -167,7 +168,7 @@ int main() {
                     writeFile << "until" << ", " << "UNTIL" << endl;
                     i = i + 4;
                     continue;
-				}
+                }
                 if (ch == 'r' && line[i + 1] == 'e' && line[i + 2] == 'a' && line[i + 3] == 'd') {
                     token.type = READ;
                     token.stringVal = "read";
@@ -183,7 +184,7 @@ int main() {
                     writeFile << "write" << ", " << "WRITE" << endl;
                     i = i + 4;
                     continue;
-				}
+                }
                 identifier += ch;
                 size_t pos = i + 1;
                 while (pos < line.length() && isalnum(line[pos])) {
@@ -194,10 +195,10 @@ int main() {
                 token.stringVal = identifier;
                 tokens.push_back(token);
                 writeFile << identifier << ", " << "IDENTIFIER" << endl;
-				i = i + identifier.length() - 1;
+                i = i + identifier.length() - 1;
                 continue;
-			}
-            if(isdigit(ch)) {
+            }
+            if (isdigit(ch)) {
                 number += ch;
                 size_t pos = i + 1;
                 while (pos < line.length() && isdigit(line[pos])) {
@@ -210,9 +211,9 @@ int main() {
                     number += line[pos];
                     pos++;
                 }
-                if(err)
+                if (err)
                 {
-                    writeFile <<"ERROR INVALID IDENTIFIER: " <<number  << " on line: " << lineNumber << endl;
+                    writeFile << "ERROR INVALID IDENTIFIER: " << number << " on line: " << lineNumber << endl;
                     cout << "ERROR INVALID IDENTIFIER: " << number << " on line: " << lineNumber << endl;
                     break;
                 }
@@ -221,20 +222,95 @@ int main() {
                 token.numVal = stoi(number);
                 tokens.push_back(token);
                 writeFile << number << ", " << "NUMBER" << endl;
-				i = i + number.length() - 1;
-				continue;
-			}
+                i = i + number.length() - 1;
+                continue;
+            }
             // If we reach here, it's an error
 
-            writeFile <<"ERROR: unexpected character -> "<< ch << " on line: " << lineNumber << endl;
+            writeFile << "ERROR: unexpected character -> " << ch << " on line: " << lineNumber << endl;
             cout << "ERROR: unexpected character -> " << ch << " on line: " << lineNumber << endl;
-            err=1;
+            err = 1;
             break;
 
         }
         if (err) break;
     }
-	writeFile.close();
+    writeFile.close();
+    readFile.close();
+
     string loc = "start " + location;
     system(loc.c_str());
+}
+
+void printSyntaxTree(Node* node, int indent = 0) {
+    if (!node) return;
+
+    // indent
+    for (int i = 0; i < indent; i++) cout << ' ';
+
+    // print this node
+    cout << TokenNames[node->token.type];
+    if(node->token.type == NUMBER)
+		cout << " (" << node->token.numVal << ")";
+	else if (node->token.type == IDENTIFIER)
+        cout << " (" << node->token.stringVal << ")";
+    cout << "\n";
+
+    // print children
+    for (Node* child : node->children)
+        printSyntaxTree(child, indent + 1);
+    printSyntaxTree(node->sibling,indent);
+}
+
+TokenType getTokenTypeFromName(const string& name) {
+    for (int i = 0; i < sizeof(TokenNames) / sizeof(TokenNames[0]); i++) {
+        if (TokenNames[i] == name) return static_cast<TokenType>(i);
+    }
+    throw runtime_error("Unknown token type: " + name);
+}
+
+void readTokensFromFile() {
+    string location = "";
+    cout << "Enter the file location: ";
+    cin >> location;
+
+    ifstream readFile(location);
+    if (!readFile.is_open()) {
+        cerr << "Failed to open file: " << location << endl;
+        return;
+    }
+
+    string line;
+
+    while (getline(readFile, line)) {
+        int commaPos = line.find(',');
+        string tokenStr = line.substr(0, commaPos);
+        string tokenType = line.substr(commaPos + 1);
+        TokenRecord tr;
+
+        tokenStr.erase(0, tokenStr.find_first_not_of(" \t\n\r"));
+        tokenStr.erase(tokenStr.find_last_not_of(" \t\n\r") + 1);
+        tokenType.erase(0, tokenType.find_first_not_of(" \t\n\r"));
+        tokenType.erase(tokenType.find_last_not_of(" \t\n\r") + 1);
+
+        tr.stringVal = tokenStr;
+        tr.type = getTokenTypeFromName(tokenType);
+        if (tr.type == NUMBER) {
+            tr.numVal = stoi(tr.stringVal);
+        }
+        else {
+            tr.numVal = 0;
+        }
+        tokens.push_back(tr);
+    }
+    readFile.close();
+}
+
+int main() {
+    //Scanner();
+    readTokensFromFile();
+	Parser parser;
+    Node* root = parser.parse();
+	printSyntaxTree(root);
+	return 0;
 }

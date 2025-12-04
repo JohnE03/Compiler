@@ -1,4 +1,6 @@
 #include "Parser.h"
+#include <iostream>
+#include <stdexcept>
 
 TokenRecord Parser::getCurrentToken(){
 	return tokens[index];
@@ -16,72 +18,195 @@ bool Parser::match(TokenType expected){
 }
 
 Node* Parser::program(){
-	return stmt_sequence();
+	Node* root = new Node(TokenRecord{ PROGRAM, "program" });
+	root->children.push_back(stmt_sequence());
+	return root;
 }
+
 Node* Parser::stmt_sequence(){
-	Node* stmtSeqNode = new Node(TokenRecord{});
-	stmtSeqNode->children.push_back(statement());
-	while (match(SEMICOLON)){
-		Node* semiColon = new Node(TokenRecord{SEMICOLON,";"});
-		semiColon->children.push_back(statement());
-		stmtSeqNode->children.push_back(semiColon);
+	Node* stmtSequenceNode = statement();
+	if (!stmtSequenceNode) return nullptr;
+
+	Node* last = stmtSequenceNode;
+
+	while (getCurrentToken().type == SEMICOLON) {
+		advance();
+
+		TokenType t = getCurrentToken().type;
+		if (t == END || t == ELSE || t == UNTIL)
+			break;
+
+		Node* next = statement();
+		if (!next) return nullptr;
+
+		last->sibling = next;
+		last = next;
 	}
-	return stmtSeqNode;
+
+	return stmtSequenceNode;
 }
+
 Node* Parser::statement(){
-	// Implementation goes here
-	return nullptr;
+	switch(getCurrentToken().type) {
+		case IF:
+			return if_stmt();
+		case REPEAT:
+			return repeat_stmt();
+		case IDENTIFIER:
+			return assign_stmt();
+		case READ:
+			return read_stmt();
+		case WRITE:
+			return write_stmt();
+		default:
+			cout << "Unexpected token in statement on line: " << index;
+			throw runtime_error("Unexpected token in statement on line: " + to_string(index));
+	}
 }
+
 Node* Parser::if_stmt(){
-	// Implementation goes here
+	Node* ifNode = new Node(getCurrentToken());
+	if (match(IF)) {
+		ifNode->children.push_back(exp());
+		if (match(THEN)) {
+			ifNode->children.push_back(stmt_sequence());
+			if (match(ELSE)) {
+				ifNode->children.push_back(stmt_sequence());
+			}
+			if (match(END)) {
+				return ifNode;
+			}
+			else {
+				cout << "Expected 'end' token on line: " << index;
+				throw runtime_error("Expected 'end' token on line: " + to_string(index));
+			}
+		}
+		else {
+			cout << "Expected 'then' token on line: " << index;
+			throw runtime_error("Expected 'then' token on line: " + to_string(index));
+		}
+	}
 	return nullptr;
 }
+
 Node* Parser::repeat_stmt(){
-	// Implementation goes here
-	return nullptr;
+	Node* repeatNode = new Node(getCurrentToken());
+	if(match(REPEAT)){
+		repeatNode->children.push_back(stmt_sequence());
+		if(match(UNTIL)){
+			repeatNode->children.push_back(exp());
+			return repeatNode;
+		}
+		else {
+			cout << "Expected 'until' token on line: " << index;
+			throw runtime_error("Expected 'until' token on line: " + to_string(index));
+		}
+	}
+	else {
+		return nullptr;
+	}
 }
+
 Node* Parser::assign_stmt(){
-	// Implementation goes here
+	Node* assignNodeId = new Node(getCurrentToken());
+	Node* assignNode = new Node(TokenRecord{ASSIGN,":="});
+	if (match(IDENTIFIER)) {
+		if(getCurrentToken().type==ASSIGN){
+			advance();
+			assignNode->children.push_back(assignNodeId);
+			assignNode->children.push_back(exp());
+			return assignNode;
+		}
+		else {
+			cout << "Expected ':=' token on line: " << index;
+			throw runtime_error("Expected ':=' token on line: " + to_string(index));
+		}
+	}
 	return nullptr;
 }
+
 Node* Parser::read_stmt(){
-	// Implementation goes here
-	return nullptr;
+	Node* readNode = new Node(getCurrentToken());
+	if (match(READ)) {
+		if (getCurrentToken().type!=IDENTIFIER) {
+			cout << "Expected identifier after 'read' on line: " << index;
+			throw runtime_error("Expected identifier after 'read' on line: " + to_string(index));
+		} else {
+			readNode->children.push_back(new Node(getCurrentToken()));
+			advance();
+			return readNode;
+		}
+	}
 }
+
 Node* Parser::write_stmt(){
-	// Implementation goes here
-	return nullptr;
+	Node* writeNode = new Node(getCurrentToken());
+	if (match(WRITE)) {
+		writeNode->children.push_back(exp());
+		return writeNode;
+	}
 }
+
 Node* Parser::exp(){
-	// Implementation goes here
-	return nullptr;
+	Node* expNode = simple_exp();
+	if(getCurrentToken().type == LESSTHAN || getCurrentToken().type == EQUAL) {
+		Node* compOpNode = new Node(getCurrentToken());
+		advance();
+		compOpNode->children.push_back(expNode);
+		compOpNode->children.push_back(simple_exp());
+		expNode = compOpNode;
+	}
+	return expNode;
 }
-Node* Parser::comparison_op(){
-	// Implementation goes here
-	return nullptr;
-}
+
 Node* Parser::simple_exp(){
-	// Implementation goes here
-	return nullptr;
+	Node* simpleExpNode = term();
+	while (getCurrentToken().type == PLUS || getCurrentToken().type == MINUS) {
+		Node* addOpNode = new Node(getCurrentToken());
+		advance();
+		addOpNode->children.push_back(simpleExpNode);
+		addOpNode->children.push_back(term());
+		simpleExpNode = addOpNode;
+	}
+	return simpleExpNode;
 }
-Node* Parser::addop(){
-	// Implementation goes here
-	return nullptr;
-}
+
 Node* Parser::term(){
-	// Implementation goes here
-	return nullptr;
+	Node* termNode = factor();
+	while(getCurrentToken().type == MULT || getCurrentToken().type == DIV) {
+		Node* mulOpNode = new Node(getCurrentToken());
+		advance();
+		mulOpNode->children.push_back(termNode);
+		mulOpNode->children.push_back(factor());
+		termNode = mulOpNode;
+	}
+	return termNode;
 }
-Node* Parser::mulop(){
-	// Implementation goes here
-	return nullptr;
-}
+
 Node* Parser::factor(){
-	// Implementation goes here
-	return nullptr;
+	Node* factorNode;
+	if (match(OPENBRACKET)) {
+		factorNode = exp();
+		if(match(CLOSEDBRACKET)){
+			return factorNode;
+		} else {
+			cout << "Expected closing bracket on line: " << index;
+			throw runtime_error("Expected closing bracket on line: " + to_string(index));
+		}
+	}
+	else if (getCurrentToken().type == NUMBER || getCurrentToken().type==IDENTIFIER) {
+		factorNode = new Node(getCurrentToken());
+		advance();
+		return factorNode;
+	}
+	else {
+		cout << "Unexpected token in factor on line: " << index;
+		throw runtime_error("Unexpected token in factor on line: " + to_string(index));
+	}
 }
 
-
-Node* Parser::parse(vector<TokenRecord> tokens) {
+Node* Parser::parse(const vector<TokenRecord>& t) {
+	tokens = t;
+	index=0;
 	return program();
 }
