@@ -11,4 +11,6 @@ class Node{
 		vector<Node*> children;
 
 		Node(TokenRecord t);
+private:
+	~Node();
 };
