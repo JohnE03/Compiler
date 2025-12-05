@@ -30,7 +30,7 @@ Node* Parser::stmt_sequence(){
 	Node* last = stmtSequenceNode;
 
 	while (getCurrentToken().type == SEMICOLON) {
-		advance();
+		match(SEMICOLON);
 
 		TokenType t = getCurrentToken().type;
 		if (t == END || t == ELSE || t == UNTIL)
@@ -68,12 +68,15 @@ Node* Parser::if_stmt(){
 	Node* ifNode = new Node(getCurrentToken());
 	if (match(IF)) {
 		ifNode->children.push_back(exp());
-		if (match(THEN)) {
+		if (getCurrentToken().type==THEN) {
+			match(THEN);
 			ifNode->children.push_back(stmt_sequence());
-			if (match(ELSE)) {
+			if (getCurrentToken().type==ELSE) {
+				match(ELSE);
 				ifNode->children.push_back(stmt_sequence());
 			}
-			if (match(END)) {
+			if (getCurrentToken().type==END) {
+				match(END);
 				return ifNode;
 			}
 			else {
@@ -93,7 +96,8 @@ Node* Parser::repeat_stmt(){
 	Node* repeatNode = new Node(getCurrentToken());
 	if(match(REPEAT)){
 		repeatNode->children.push_back(stmt_sequence());
-		if(match(UNTIL)){
+		if(getCurrentToken().type==UNTIL){
+			match(UNTIL);
 			repeatNode->children.push_back(exp());
 			return repeatNode;
 		}
@@ -112,7 +116,7 @@ Node* Parser::assign_stmt(){
 	Node* assignNode = new Node(TokenRecord{ASSIGN,":="});
 	if (match(IDENTIFIER)) {
 		if(getCurrentToken().type==ASSIGN){
-			advance();
+			match(ASSIGN);
 			assignNode->children.push_back(assignNodeId);
 			assignNode->children.push_back(exp());
 			return assignNode;
@@ -133,10 +137,11 @@ Node* Parser::read_stmt(){
 			throw runtime_error("Expected identifier after 'read' on line: " + to_string(index));
 		} else {
 			readNode->children.push_back(new Node(getCurrentToken()));
-			advance();
+			match(IDENTIFIER);
 			return readNode;
 		}
 	}
+	return nullptr;
 }
 
 Node* Parser::write_stmt(){
@@ -145,6 +150,7 @@ Node* Parser::write_stmt(){
 		writeNode->children.push_back(exp());
 		return writeNode;
 	}
+	return nullptr;
 }
 
 Node* Parser::exp(){

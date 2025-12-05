@@ -219,7 +219,7 @@ void Scanner() {
                 }
 
                 token.type = NUMBER;
-                token.numVal = stoi(number);
+                token.stringVal = number;
                 tokens.push_back(token);
                 writeFile << number << ", " << "NUMBER" << endl;
                 i = i + number.length() - 1;
@@ -251,7 +251,7 @@ void printSyntaxTree(Node* node, int indent = 0) {
     // print this node
     cout << TokenNames[node->token.type];
     if(node->token.type == NUMBER)
-		cout << " (" << node->token.numVal << ")";
+		cout << " (" << stoi(node->token.stringVal) << ")";
 	else if (node->token.type == IDENTIFIER)
         cout << " (" << node->token.stringVal << ")";
     cout << "\n";
@@ -295,12 +295,6 @@ void readTokensFromFile() {
 
         tr.stringVal = tokenStr;
         tr.type = getTokenTypeFromName(tokenType);
-        if (tr.type == NUMBER) {
-            tr.numVal = stoi(tr.stringVal);
-        }
-        else {
-            tr.numVal = 0;
-        }
         tokens.push_back(tr);
     }
     readFile.close();

@@ -3,8 +3,7 @@
 #include <vector>
 using namespace std;
 
-typedef enum
-{
+typedef enum{
     PROGRAM,
     SEMICOLON, IF, THEN, ELSE, END,
     REPEAT, UNTIL,
@@ -28,11 +27,9 @@ const string TokenNames[] = {
     "NUMBER"
 };
 
-typedef struct
-{
+struct TokenRecord{
     TokenType type;
     string stringVal;
-    int numVal;
-} TokenRecord;
+};
 
 extern vector<TokenRecord> tokens;
