@@ -18,31 +18,31 @@ bool Parser::match(TokenType expected){
 }
 
 Node* Parser::program(){
-	Node* root = new Node(TokenRecord{ PROGRAM, "program" });
-	root->children.push_back(stmt_sequence());
-	return root;
+	return stmt_sequence();
 }
 
 Node* Parser::stmt_sequence(){
-	Node* stmtSequenceNode = statement();
-	if (!stmtSequenceNode) return nullptr;
-
-	Node* last = stmtSequenceNode;
-
-	while (getCurrentToken().type == SEMICOLON) {
-		match(SEMICOLON);
+	Node* stmtSequenceNode = nullptr;
+	Node* last = nullptr;
+	int size = tokens.size() - 1;
+	while (index < size) {
+		if (!stmtSequenceNode) {
+			stmtSequenceNode = statement();
+			last = stmtSequenceNode;
+		}
+		else {
+			last->sibling = statement();
+			last = last->sibling;
+		}
+		
+		if(getCurrentToken().type == SEMICOLON) {
+			match(SEMICOLON);
+		}
 
 		TokenType t = getCurrentToken().type;
 		if (t == END || t == ELSE || t == UNTIL)
 			break;
-
-		Node* next = statement();
-		if (!next) return nullptr;
-
-		last->sibling = next;
-		last = next;
 	}
-
 	return stmtSequenceNode;
 }
 
