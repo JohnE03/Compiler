@@ -69,13 +69,19 @@ Node* Parser::if_stmt(){
 	if (match(IF)) {
 		ifNode->children.push_back(exp());
 		if (getCurrentToken().type==THEN) {
+			Node* thenNode = new Node(getCurrentToken());
 			match(THEN);
-			ifNode->children.push_back(stmt_sequence());
+			thenNode->children.push_back(stmt_sequence());
+			ifNode->children.push_back(thenNode);
 			if (getCurrentToken().type==ELSE) {
+				Node* elseNode = new Node(getCurrentToken());
 				match(ELSE);
-				ifNode->children.push_back(stmt_sequence());
+				elseNode->children.push_back(stmt_sequence());
+				ifNode->children.push_back(elseNode);
 			}
 			if (getCurrentToken().type==END) {
+				Node* endNode = new Node(getCurrentToken());
+				ifNode->children.push_back(endNode);
 				match(END);
 				return ifNode;
 			}
@@ -97,8 +103,10 @@ Node* Parser::repeat_stmt(){
 	if(match(REPEAT)){
 		repeatNode->children.push_back(stmt_sequence());
 		if(getCurrentToken().type==UNTIL){
+			Node* untilNode = new Node(getCurrentToken());
 			match(UNTIL);
-			repeatNode->children.push_back(exp());
+			untilNode->children.push_back(exp());
+			repeatNode->children.push_back(untilNode);
 			return repeatNode;
 		}
 		else {
