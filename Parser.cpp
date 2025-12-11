@@ -66,15 +66,20 @@ Node* Parser::statement(){
 
 Node* Parser::if_stmt(){
 	Node* ifNode = new Node(getCurrentToken());
+	ifNode->shape = "rectangle";
 	if (match(IF)) {
-		ifNode->children.push_back(exp());
+		Node* conditionNode = exp();
+		conditionNode->shape = "ellipse";
+		ifNode->children.push_back(conditionNode);
 		if (getCurrentToken().type==THEN) {
 			Node* thenNode = new Node(getCurrentToken());
+			thenNode->shape = "ellipse";
 			match(THEN);
 			thenNode->children.push_back(stmt_sequence());
 			ifNode->children.push_back(thenNode);
 			if (getCurrentToken().type==ELSE) {
 				Node* elseNode = new Node(getCurrentToken());
+				elseNode->shape = "ellipse";
 				match(ELSE);
 				elseNode->children.push_back(stmt_sequence());
 				ifNode->children.push_back(elseNode);
@@ -100,12 +105,16 @@ Node* Parser::if_stmt(){
 
 Node* Parser::repeat_stmt(){
 	Node* repeatNode = new Node(getCurrentToken());
+	repeatNode->shape = "rectangle";
 	if(match(REPEAT)){
-		repeatNode->children.push_back(stmt_sequence());
+		Node* repeatBodyNode = stmt_sequence();
+		repeatBodyNode->shape = "ellipse";
+		repeatNode->children.push_back(repeatBodyNode);
 		if(getCurrentToken().type==UNTIL){
 			Node* untilNode = new Node(getCurrentToken());
 			match(UNTIL);
 			untilNode->children.push_back(exp());
+			untilNode->shape = "ellipse";
 			repeatNode->children.push_back(untilNode);
 			return repeatNode;
 		}
@@ -119,14 +128,17 @@ Node* Parser::repeat_stmt(){
 	}
 }
 
-Node* Parser::assign_stmt(){
+Node* Parser::assign_stmt(){//assign(ID),expr
 	Node* assignNodeId = new Node(getCurrentToken());
 	Node* assignNode = new Node(TokenRecord{ASSIGN,":="});
+	assignNode->shape = "rectangle";
 	if (match(IDENTIFIER)) {
 		if(getCurrentToken().type==ASSIGN){
 			match(ASSIGN);
 			assignNode->children.push_back(assignNodeId);
-			assignNode->children.push_back(exp());
+			Node* exprNode = exp();
+			exprNode->shape = "ellipse";
+			assignNode->children.push_back(exprNode);
 			return assignNode;
 		}
 		else {
@@ -139,6 +151,7 @@ Node* Parser::assign_stmt(){
 
 Node* Parser::read_stmt(){
 	Node* readNode = new Node(getCurrentToken());
+	readNode->shape = "rectangle";
 	if (match(READ)) {
 		if (getCurrentToken().type!=IDENTIFIER) {
 			cout << "Expected identifier after 'read' on line: " << index;
@@ -154,8 +167,11 @@ Node* Parser::read_stmt(){
 
 Node* Parser::write_stmt(){
 	Node* writeNode = new Node(getCurrentToken());
+	writeNode->shape = "rectangle";
 	if (match(WRITE)) {
-		writeNode->children.push_back(exp());
+		Node* expNode = exp();
+		expNode->shape = "ellipse";
+		writeNode->children.push_back(expNode);
 		return writeNode;
 	}
 	return nullptr;
