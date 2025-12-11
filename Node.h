@@ -9,6 +9,7 @@ class Node{
 		TokenRecord token;
 		Node* sibling;
 		vector<Node*> children;
+		string shape;
 
 		Node(TokenRecord t);
 private:
