@@ -30,4 +30,3 @@ struct TokenRecord{
     string stringVal;
 };
 
-extern vector<TokenRecord> tokens;

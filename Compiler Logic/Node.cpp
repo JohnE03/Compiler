@@ -4,6 +4,7 @@ Node::Node(TokenRecord t){
 	token = t;
 	sibling = nullptr;
 	children = vector<Node*>();
+    shape="ellipse";
 }
 Node::~Node() {
     for (Node* child : children) {

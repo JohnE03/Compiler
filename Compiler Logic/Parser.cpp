@@ -1,6 +1,11 @@
 #include "Parser.h"
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <vector>
+#include <sstream>
+using namespace std;
+
 
 TokenRecord Parser::getCurrentToken(){
 	return tokens[index];
@@ -75,19 +80,27 @@ Node* Parser::if_stmt(){
 			Node* thenNode = new Node(getCurrentToken());
 			thenNode->shape = "ellipse";
 			match(THEN);
-			thenNode->children.push_back(stmt_sequence());
-			ifNode->children.push_back(thenNode);
+
+            //changed
+			//thenNode->children.push_back(stmt_sequence());
+			ifNode->children.push_back(stmt_sequence());
+
 			if (getCurrentToken().type==ELSE) {
 				Node* elseNode = new Node(getCurrentToken());
 				elseNode->shape = "ellipse";
 				match(ELSE);
-				elseNode->children.push_back(stmt_sequence());
-				ifNode->children.push_back(elseNode);
+
+                //changed
+				//elseNode->children.push_back(stmt_sequence());
+				ifNode->children.push_back(stmt_sequence());
 			}
 			if (getCurrentToken().type==END) {
-				Node* endNode = new Node(getCurrentToken());
-				ifNode->children.push_back(endNode);
+
+                //changed
+				//Node* endNode = new Node(getCurrentToken());
+				//ifNode->children.push_back(endNode);
 				match(END);
+
 				return ifNode;
 			}
 			else {
@@ -108,14 +121,16 @@ Node* Parser::repeat_stmt(){
 	repeatNode->shape = "rectangle";
 	if(match(REPEAT)){
 		Node* repeatBodyNode = stmt_sequence();
-		repeatBodyNode->shape = "ellipse";
+
 		repeatNode->children.push_back(repeatBodyNode);
 		if(getCurrentToken().type==UNTIL){
 			Node* untilNode = new Node(getCurrentToken());
 			match(UNTIL);
-			untilNode->children.push_back(exp());
-			untilNode->shape = "ellipse";
-			repeatNode->children.push_back(untilNode);
+
+            //changed
+			//untilNode->children.push_back(exp());
+            repeatNode->children.push_back(exp());
+
 			return repeatNode;
 		}
 		else {
@@ -130,14 +145,14 @@ Node* Parser::repeat_stmt(){
 
 Node* Parser::assign_stmt(){//assign(ID),expr
 	Node* assignNodeId = new Node(getCurrentToken());
-	Node* assignNode = new Node(TokenRecord{ASSIGN,":="});
+	Node* assignNode = new Node(TokenRecord{ASSIGN, "assign"});
 	assignNode->shape = "rectangle";
 	if (match(IDENTIFIER)) {
 		if(getCurrentToken().type==ASSIGN){
 			match(ASSIGN);
 			assignNode->children.push_back(assignNodeId);
 			Node* exprNode = exp();
-			exprNode->shape = "ellipse";
+
 			assignNode->children.push_back(exprNode);
 			return assignNode;
 		}
@@ -170,7 +185,7 @@ Node* Parser::write_stmt(){
 	writeNode->shape = "rectangle";
 	if (match(WRITE)) {
 		Node* expNode = exp();
-		expNode->shape = "ellipse";
+
 		writeNode->children.push_back(expNode);
 		return writeNode;
 	}
@@ -225,6 +240,7 @@ Node* Parser::factor(){
 		}
 	}
 	else if (getCurrentToken().type == NUMBER || getCurrentToken().type==IDENTIFIER) {
+
 		factorNode = new Node(getCurrentToken());
 		advance();
 		return factorNode;
@@ -235,8 +251,84 @@ Node* Parser::factor(){
 	}
 }
 
-Node* Parser::parse(const vector<TokenRecord>& t) {
+Node* Parser::parse( vector<TokenRecord>& t) {
 	tokens = t;
 	index=0;
 	return program();
+}
+
+
+
+TokenType getTokenTypeFromName(const string& name) {
+    for (int i = 0; i < sizeof(TokenNames) / sizeof(TokenNames[0]); i++) {
+        if (TokenNames[i] == name) return static_cast<TokenType>(i);
+    }
+    throw runtime_error("Unknown token type: " + name);
+}
+
+vector<TokenRecord> readTokensFromString(string &s) {
+//    string location = "";
+//    cout << "Enter the file location: ";
+//    cin >> location;
+//
+//    ifstream readFile(location);
+//    if (!readFile.is_open()) {
+//        cerr << "Failed to open file: " << location << endl;
+//        return {};
+//    }
+    vector <TokenRecord> tokens;
+    stringstream in(s);
+
+    string line;
+
+    while (getline(in, line)) {
+        int commaPos = line.find(',');
+        string tokenStr = line.substr(0, commaPos);
+        string tokenType = line.substr(commaPos + 1);
+        TokenRecord tr;
+
+        tokenStr.erase(0, tokenStr.find_first_not_of(" \t\n\r"));
+        tokenStr.erase(tokenStr.find_last_not_of(" \t\n\r") + 1);
+        tokenType.erase(0, tokenType.find_first_not_of(" \t\n\r"));
+        tokenType.erase(tokenType.find_last_not_of(" \t\n\r") + 1);
+
+
+        tr.type = getTokenTypeFromName(tokenType);
+        if(tr.type==ASSIGN)
+        {
+            tr.stringVal="assign";
+
+        }
+        else if(tr.type==PLUS)
+        {
+            tr.stringVal="op (+)";
+        }
+        else if(tr.type==MINUS)
+        {
+            tr.stringVal="op (-)";
+        }
+        else if(tr.type==MULT)
+        {
+            tr.stringVal="op (*)";
+        }
+        else if(tr.type==DIV)
+        {
+            tr.stringVal="op (/)";
+        }
+        else if(tr.type==LESSTHAN)
+        {
+            tr.stringVal="op (<)";
+        }
+        else if(tr.type==EQUAL)
+        {
+            tr.stringVal="op (=)";
+        }
+
+        else
+        {
+            tr.stringVal=tokenStr;
+        }
+        tokens.push_back(tr);
+    }
+    return tokens;
 }

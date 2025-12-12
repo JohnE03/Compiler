@@ -25,6 +25,7 @@ private:
 	Node* factor();
 
 public:
-	Node* parse(const vector<TokenRecord>& t = ::tokens);
+	Node* parse( vector<TokenRecord>& t );
 };
+vector<TokenRecord> readTokensFromString(string &s);
 

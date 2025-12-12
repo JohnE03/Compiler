@@ -4,27 +4,33 @@
 #include <vector>
 #include "Token.h"
 #include "Parser.h"
+#include <sstream>
+#include "Scanner.h"
 
 using namespace std;
 
 vector<TokenRecord> tokens;
 
-void Scanner() {
+string scanner(string s) {
     TokenRecord token{};
 
-    string location = "";
-    cout << "Enter the code file location: ";
-    cin >> location;
-    ifstream readFile(location);
-    cout << "Enter output file location (default: output.txt): ";
-    cin >> location;
-    ofstream writeFile(location);
+//    string location = "";
+//    cout << "Enter the code file location: ";
+//    cin >> location;
+//    ifstream readFile(location);
+//    cout << "Enter output file location (default: output.txt): ";
+//    cin >> location;
+//    ofstream out(location);
 
     int lineNumber = 0;
     string line, identifier, number;
     bool inComment = false, inString = false;
     bool err = 0;
-    while (getline(readFile, line)) {
+    
+    stringstream in(s);
+    stringstream out;
+    
+    while (getline(in, line)) {
         lineNumber++;
         for (int i = 0; i < line.length(); i++) {
             if (!inString) identifier = "";
@@ -43,7 +49,7 @@ void Scanner() {
                     token.type = IDENTIFIER;
                     token.stringVal = identifier;
                     tokens.push_back(token);
-                    writeFile << identifier << ", " << "IDENTIFIER" << endl;
+                    out << identifier << ", " << "IDENTIFIER" << endl;
                 }
                 else {
                     identifier += ch;
@@ -59,55 +65,55 @@ void Scanner() {
                 token.type = SEMICOLON;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "SEMICOLON" << endl;
+                out << ch << ", " << "SEMICOLON" << endl;
                 continue;
             case '+':
                 token.type = PLUS;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "PLUS" << endl;
+                out << ch << ", " << "PLUS" << endl;
                 continue;
             case '-':
                 token.type = MINUS;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "MINUS" << endl;
+                out << ch << ", " << "MINUS" << endl;
                 continue;
             case '*':
                 token.type = MULT;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "MULT" << endl;
+                out << ch << ", " << "MULT" << endl;
                 continue;
             case '/':
                 token.type = DIV;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "DIV" << endl;
+                out << ch << ", " << "DIV" << endl;
                 continue;
             case '<':
                 token.type = LESSTHAN;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "LESSTHAN" << endl;
+               out << ch << ", " << "LESSTHAN" << endl;
                 continue;
             case '=':
                 token.type = EQUAL;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "EQUAL" << endl;
+                out << ch << ", " << "EQUAL" << endl;
                 continue;
             case '(':
                 token.type = OPENBRACKET;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "OPENBRACKET" << endl;
+                    out<< ch << ", " << "OPENBRACKET" << endl;
                 continue;
             case ')':
                 token.type = CLOSEDBRACKET;
                 token.stringVal = ch;
                 tokens.push_back(token);
-                writeFile << ch << ", " << "CLOSEDBRACKET" << endl;
+                    out << ch << ", " << "CLOSEDBRACKET" << endl;
                 continue;
             }
 
@@ -115,7 +121,7 @@ void Scanner() {
                 token.type = ASSIGN;
                 token.stringVal = ":=";
                 tokens.push_back(token);
-                writeFile << ":=" << ", " << "ASSIGN" << endl;
+                out << ":=" << ", " << "ASSIGN" << endl;
                 i = i + 1;
                 continue;
             }
@@ -125,7 +131,7 @@ void Scanner() {
                     token.type = IF;
                     token.stringVal = "if";
                     tokens.push_back(token);
-                    writeFile << "if" << ", " << "IF" << endl;
+                    out << "if" << ", " << "IF" << endl;
                     i = i + 1;
                     continue;
                 }
@@ -133,7 +139,7 @@ void Scanner() {
                     token.type = THEN;
                     token.stringVal = "then";
                     tokens.push_back(token);
-                    writeFile << "then" << ", " << "THEN" << endl;
+                    out << "then" << ", " << "THEN" << endl;
                     i = i + 3;
                     continue;
                 }
@@ -141,7 +147,7 @@ void Scanner() {
                     token.type = ELSE;
                     token.stringVal = "else";
                     tokens.push_back(token);
-                    writeFile << "else" << ", " << "ELSE" << endl;
+                    out << "else" << ", " << "ELSE" << endl;
                     i = i + 3;
                     continue;
                 }
@@ -149,7 +155,7 @@ void Scanner() {
                     token.type = END;
                     token.stringVal = "end";
                     tokens.push_back(token);
-                    writeFile << "end" << ", " << "END" << endl;
+                    out << "end" << ", " << "END" << endl;
                     i = i + 2;
                     continue;
                 }
@@ -157,7 +163,7 @@ void Scanner() {
                     token.type = REPEAT;
                     token.stringVal = "repeat";
                     tokens.push_back(token);
-                    writeFile << "repeat" << ", " << "REPEAT" << endl;
+                    out << "repeat" << ", " << "REPEAT" << endl;
                     i = i + 5;
                     continue;
                 }
@@ -165,7 +171,7 @@ void Scanner() {
                     token.type = UNTIL;
                     token.stringVal = "until";
                     tokens.push_back(token);
-                    writeFile << "until" << ", " << "UNTIL" << endl;
+                    out << "until" << ", " << "UNTIL" << endl;
                     i = i + 4;
                     continue;
                 }
@@ -173,7 +179,7 @@ void Scanner() {
                     token.type = READ;
                     token.stringVal = "read";
                     tokens.push_back(token);
-                    writeFile << "read" << ", " << "READ" << endl;
+                    out << "read" << ", " << "READ" << endl;
                     i = i + 3;
                     continue;
                 }
@@ -181,7 +187,7 @@ void Scanner() {
                     token.type = WRITE;
                     token.stringVal = "write";
                     tokens.push_back(token);
-                    writeFile << "write" << ", " << "WRITE" << endl;
+                    out << "write" << ", " << "WRITE" << endl;
                     i = i + 4;
                     continue;
                 }
@@ -194,7 +200,7 @@ void Scanner() {
                 token.type = IDENTIFIER;
                 token.stringVal = identifier;
                 tokens.push_back(token);
-                writeFile << identifier << ", " << "IDENTIFIER" << endl;
+                out << identifier << ", " << "IDENTIFIER" << endl;
                 i = i + identifier.length() - 1;
                 continue;
             }
@@ -213,7 +219,7 @@ void Scanner() {
                 }
                 if (err)
                 {
-                    writeFile << "ERROR INVALID IDENTIFIER: " << number << " on line: " << lineNumber << endl;
+                    out << "ERROR INVALID IDENTIFIER: " << number << " on line: " << lineNumber << endl;
                     cout << "ERROR INVALID IDENTIFIER: " << number << " on line: " << lineNumber << endl;
                     break;
                 }
@@ -221,13 +227,13 @@ void Scanner() {
                 token.type = NUMBER;
                 token.stringVal = number;
                 tokens.push_back(token);
-                writeFile << number << ", " << "NUMBER" << endl;
+                out << number << ", " << "NUMBER" << endl;
                 i = i + number.length() - 1;
                 continue;
             }
             // If we reach here, it's an error
 
-            writeFile << "ERROR: unexpected character -> " << ch << " on line: " << lineNumber << endl;
+            out << "ERROR: unexpected character -> " << ch << " on line: " << lineNumber << endl;
             cout << "ERROR: unexpected character -> " << ch << " on line: " << lineNumber << endl;
             err = 1;
             break;
@@ -235,11 +241,12 @@ void Scanner() {
         }
         if (err) break;
     }
-    writeFile.close();
-    readFile.close();
-
-    string loc = "start " + location;
-    system(loc.c_str());
+//    writeFile.close();
+//    readFile.close();
+//
+//    string loc = "start " + location;
+//    system(loc.c_str());
+return out.str();
 }
 
 void printSyntaxTree(Node* node, int indent = 0) {
@@ -262,49 +269,51 @@ void printSyntaxTree(Node* node, int indent = 0) {
     printSyntaxTree(node->sibling,indent);
 }
 
-TokenType getTokenTypeFromName(const string& name) {
-    for (int i = 0; i < sizeof(TokenNames) / sizeof(TokenNames[0]); i++) {
-        if (TokenNames[i] == name) return static_cast<TokenType>(i);
-    }
-    throw runtime_error("Unknown token type: " + name);
-}
+//TokenType getTokenTypeFromName(const string& name) {
+//    for (int i = 0; i < sizeof(TokenNames) / sizeof(TokenNames[0]); i++) {
+//        if (TokenNames[i] == name) return static_cast<TokenType>(i);
+//    }
+//    throw runtime_error("Unknown token type: " + name);
+//}
+//
+//vector<TokenRecord> readTokensFromString(string s) {
+////    string location = "";
+////    cout << "Enter the file location: ";
+////    cin >> location;
+////
+////    ifstream readFile(location);
+////    if (!readFile.is_open()) {
+////        cerr << "Failed to open file: " << location << endl;
+////        return {};
+////    }
+//
+//    stringstream in(s);
+//
+//    string line;
+//
+//    while (getline(in, line)) {
+//        int commaPos = line.find(',');
+//        string tokenStr = line.substr(0, commaPos);
+//        string tokenType = line.substr(commaPos + 1);
+//        TokenRecord tr;
+//
+//        tokenStr.erase(0, tokenStr.find_first_not_of(" \t\n\r"));
+//        tokenStr.erase(tokenStr.find_last_not_of(" \t\n\r") + 1);
+//        tokenType.erase(0, tokenType.find_first_not_of(" \t\n\r"));
+//        tokenType.erase(tokenType.find_last_not_of(" \t\n\r") + 1);
+//
+//        tr.stringVal = tokenStr;
+//        tr.type = getTokenTypeFromName(tokenType);
+//        tokens.push_back(tr);
+//    }
+//    readFile.close();
+//}
 
-void readTokensFromFile() {
-    string location = "";
-    cout << "Enter the file location: ";
-    cin >> location;
-
-    ifstream readFile(location);
-    if (!readFile.is_open()) {
-        cerr << "Failed to open file: " << location << endl;
-        return;
-    }
-
-    string line;
-
-    while (getline(readFile, line)) {
-        int commaPos = line.find(',');
-        string tokenStr = line.substr(0, commaPos);
-        string tokenType = line.substr(commaPos + 1);
-        TokenRecord tr;
-
-        tokenStr.erase(0, tokenStr.find_first_not_of(" \t\n\r"));
-        tokenStr.erase(tokenStr.find_last_not_of(" \t\n\r") + 1);
-        tokenType.erase(0, tokenType.find_first_not_of(" \t\n\r"));
-        tokenType.erase(tokenType.find_last_not_of(" \t\n\r") + 1);
-
-        tr.stringVal = tokenStr;
-        tr.type = getTokenTypeFromName(tokenType);
-        tokens.push_back(tr);
-    }
-    readFile.close();
-}
-
-int main() {
-    //Scanner();
-    readTokensFromFile();
-	Parser parser;
-    Node* root = parser.parse();
-	printSyntaxTree(root);
-	return 0;
-}
+//int main() {
+//    //Scanner();
+//    readTokensFromFile();
+//	Parser parser;
+//    Node* root = parser.parse();
+//	printSyntaxTree(root);
+//	return 0;
+//}
