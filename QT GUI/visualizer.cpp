@@ -19,12 +19,12 @@ static int NODE_H  = NODE_H_DEFAULT;
 
 
 struct TreeNodeVisual {
-    int x;      // pixel X position
+    double x;      // pixel X position
     int y;      // pixel Y position
     string label;   // text drawn inside the node
     string shape;   // "rect" or "ellipse"
 
-    TreeNodeVisual(int X, int Y, const string& L, const string& S)
+    TreeNodeVisual(double X, int Y, const string& L, const string& S)
             : x(X), y(Y), label(L), shape(S) {}
 };
 // --- replace pair<int,int> edges with this Edge struct ---
@@ -59,24 +59,40 @@ static string lower(const string& s) {
 // Pixel X = unit * H_UNIT, Pixel Y = depth * V_UNIT
 
 // Post-order traversal: assign integer "unit X" index to each node
-static void computeUnitX(Node* node, map<Node*, int>& unitX, int& leafCounter) {
+static void computeUnitX(Node* node, map<Node*, double>& unitX, double& leafCounter) {
     if (!node) return;
 
     // If no children → leaf node: give next unit index
     if (node->children.empty()) {
         unitX[node] = leafCounter++;
-        return;
+
     }
 
     // Recurse into children first
     for (auto* ch : node->children) {
+        if(node->token.type == ASSIGN || node->token.type == READ) {
+            // Skip the first child (identifier) for unitX computation
+            if (ch == node->children[0]) continue;
+        }
         computeUnitX(ch, unitX, leafCounter);
     }
 
     // If children exist, center between first and last child
-    int leftUnit  = unitX[node->children.front()];
-    int rightUnit = unitX[node->children.back()];
-    unitX[node] = (leftUnit + rightUnit) / 2;
+    if(node->token.type==ASSIGN)
+    {
+        unitX[node]= unitX[node->children[1]];
+    }
+    else if(node->token.type==READ)
+    {
+        unitX[node]= leafCounter++;
+    }
+    else if (node->children.empty()) {
+        // already handled leaf case above
+    } else {
+        int leftUnit = unitX[node->children.front()];
+        int rightUnit = unitX[node->children.back()];
+        unitX[node] = (leftUnit + rightUnit) / 2.0;
+    }
 
     if (node->sibling!= nullptr) {
         computeUnitX(node->sibling, unitX, leafCounter);
@@ -87,7 +103,7 @@ static void computeUnitX(Node* node, map<Node*, int>& unitX, int& leafCounter) {
 // nodeIndex maps SyntaxTreeNode* -> index in outNodes.
 // Replace previous declaration/definition of collectNodesAndEdges with this version
 static void collectNodesAndEdges(Node* node,
-                                 const map<Node*, int>& unitX,
+                                 const map<Node*, double>& unitX,
                                  vector<TreeNodeVisual>& outNodes,
                                  vector<Edge>& outEdges,
                                  map<Node*, int>& nodeIndex,
@@ -97,10 +113,10 @@ static void collectNodesAndEdges(Node* node,
 
     // get unit (fallback to 0 if missing)
     auto it = unitX.find(node);
-    int unit = (it != unitX.end()) ? it->second : 0;
+   double unit = (it != unitX.end()) ? it->second : 0;
 
     // pixel coords
-    int px = unit * H_UNIT;
+    double px = unit * H_UNIT;
     int py = depth * V_UNIT;
 
     // build label from node's token — adapt if your field names differ
@@ -166,18 +182,24 @@ protected:
 // --- Replace drawNode with this (keeps node.shape but unifies style) ---
 // --- unified color for all nodes (keeps shape) ---
 static QGraphicsItem* drawNode(QGraphicsScene* scene,
-                               int x, int y, int w, int h,
+                               double x, int y, int w, int h,
                                const QString& label, const std::string& shape,
                                const std::string& /*tokenType*/ = "")
 {
-    QRectF rect(x, y, w, h);
+        QRectF rect(x, y, w, h);
 
     // subtle shadow (kept)
     QBrush shadowBrush(QColor(0,0,0,30));
     QPen noPen(Qt::NoPen);
-    QGraphicsRectItem* shadow = scene->addRect(rect.translated(4,4), noPen, shadowBrush);
-    shadow->setZValue(0);
-
+    if(shape=="ellipse")
+    {
+        QGraphicsEllipseItem* shadow = scene->addEllipse(rect.translated(4,4), noPen, shadowBrush);
+        shadow->setZValue(0);
+    }
+    else {
+        QGraphicsRectItem *shadow = scene->addRect(rect.translated(4, 4), noPen, shadowBrush);
+        shadow->setZValue(0);
+    }
     // <- ALL NODES use this exact fill color now ->
 
     QBrush brush(Qt::white);
@@ -187,6 +209,8 @@ static QGraphicsItem* drawNode(QGraphicsScene* scene,
     QGraphicsItem* mainItem = nullptr;
 
     if (shape == "ellipse") {
+
+
         QGraphicsEllipseItem* e = scene->addEllipse(rect, pen, brush);
         e->setZValue(1);
         mainItem = e;
@@ -257,8 +281,8 @@ int visualizeTree(Node* root, QWidget* parent)
     if (!root) return 1;  // nothing to do
 
     // 1) compute unit positions
-    std::map<Node*, int> unitX;
-    int leafCounter = 0;
+    std::map<Node*, double> unitX;
+    double leafCounter = 0;
     computeUnitX(root, unitX, leafCounter);
     vector<Edge> edges;
     // 2) collect drawable nodes & edges

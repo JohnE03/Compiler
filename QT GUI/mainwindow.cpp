@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(browseParseButton, &QPushButton::clicked,
             this, &MainWindow::browseParseTreeFile);
 
-    generateParseButton = new QPushButton("Generate Parse Tree", this);
+    generateParseButton = new QPushButton("Generate Syntax Tree", this);
     parseTreeLayout->addWidget(generateParseButton);
     connect(generateParseButton, &QPushButton::clicked,
             this, &MainWindow::generateParseTree);
@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addLayout(parseTreeLayout);
 
     // Window setup
-    setWindowTitle("Token Extractor and Parse Tree Viewer");
+    setWindowTitle("Token Extractor and Syntax Tree Viewer");
     resize(1200, 600);
 
     // Dark theme styling
@@ -184,7 +184,7 @@ void MainWindow::saveExtractTokensFile() {
 void MainWindow::browseParseTreeFile() {
     QString fileName = QFileDialog::getOpenFileName(
             this,
-            tr("Open File for Parse Tree"),
+            tr("Open File for Syntax Tree"),
             "",
             tr("Text Files (*.txt);;All Files (*)")
     );
@@ -198,7 +198,7 @@ void MainWindow::browseParseTreeFile() {
             file.close();
         } else {
             QMessageBox::warning(this, tr("Error"),
-                                 tr("Unable to open the file for Parse Tree"));
+                                 tr("Unable to open the file for Syntax Tree"));
         }
     }
 }
@@ -206,8 +206,8 @@ void MainWindow::generateParseTree() {
     QString inputText = parseTreeTextEdit->toPlainText();
 
     if (inputText.isEmpty()) {
-        QMessageBox::information(this, tr("Generate Parse Tree"),
-                                 tr("No input provided for Parse Tree generation."));
+        QMessageBox::information(this, tr("Generate Syntax Tree"),
+                                 tr("No input provided for Syntax Tree generation."));
         return;
     }
 
@@ -215,11 +215,11 @@ void MainWindow::generateParseTree() {
     string s= inputText.toStdString();
     int result = tree( s);
 
-    if (result == 0) {  // 0 means success
-        QMessageBox::information(this, tr("Parse Tree"),
-                                 tr("Parse Tree generated successfully."));
+    if (result == 0) {  // 0 means successs
+        QMessageBox::information(this, tr("Syntax Tree"),
+                                 tr("Syntax Tree generated successfully."));
     } else {
-        QMessageBox::warning(this, tr("Parse Tree"),
+        QMessageBox::warning(this, tr("Syntax Tree"),
                              tr("Failed to generate Parse Tree."));
     }
 }
